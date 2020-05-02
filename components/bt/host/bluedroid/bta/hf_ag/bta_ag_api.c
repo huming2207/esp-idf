@@ -122,7 +122,7 @@ void BTA_AgRegister(tBTA_SERVICE_MASK services, tBTA_SEC sec_mask,tBTA_AG_FEAT f
         p_buf->app_id = app_id;
         for (i = 0; i < BTA_AG_NUM_IDX; i++) {
             if(p_service_names[i]) {
-                BCM_STRNCPY_S(p_buf->p_name[i], BTA_SERVICE_NAME_LEN+1, p_service_names[i], BTA_SERVICE_NAME_LEN);
+                BCM_STRNCPY_S(p_buf->p_name[i], p_service_names[i], BTA_SERVICE_NAME_LEN);
                 p_buf->p_name[i][BTA_SERVICE_NAME_LEN] = 0;
             } else {
                 p_buf->p_name[i][0] = 0;
@@ -262,8 +262,6 @@ void BTA_AgResult(UINT16 handle, tBTA_AG_RES result, tBTA_AG_RES_DATA *p_data)
 {
     tBTA_AG_API_RESULT  *p_buf;
 
-    // printf("BTA_AgReslut: %d\n",result);
-    
     if ((p_buf = (tBTA_AG_API_RESULT *) osi_malloc(sizeof(tBTA_AG_API_RESULT))) != NULL) {
         p_buf->hdr.event = BTA_AG_API_RESULT_EVT;
         p_buf->hdr.layer_specific = handle;

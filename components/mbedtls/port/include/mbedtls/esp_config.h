@@ -118,6 +118,12 @@
 #undef MBEDTLS_AES_ALT
 #endif
 
+#ifdef CONFIG_MBEDTLS_HARDWARE_GCM
+#define MBEDTLS_GCM_ALT
+#else
+#undef MBEDTLS_GCM_ALT
+#endif
+
 /* MBEDTLS_SHAxx_ALT to enable hardware SHA support
    with software fallback.
 */
@@ -676,6 +682,29 @@
 #define MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED
 #else
 #undef MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED
+#endif
+
+/**
+ * \def MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
+ *
+ * Enable the ECJPAKE based ciphersuite modes in SSL / TLS.
+ *
+ * \warning This is currently experimental. EC J-PAKE support is based on the
+ * Thread v1.0.0 specification; incompatible changes to the specification
+ * might still happen. For this reason, this is disabled by default.
+ *
+ * Requires: MBEDTLS_ECJPAKE_C
+ *           MBEDTLS_SHA256_C
+ *           MBEDTLS_ECP_DP_SECP256R1_ENABLED
+ *
+ * This enables the following ciphersuites (if other requisites are
+ * enabled as well):
+ *      MBEDTLS_TLS_ECJPAKE_WITH_AES_128_CCM_8
+ */
+#ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_ECJPAKE
+#define MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
+#else
+#undef MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
 #endif
 
 /**
@@ -1588,7 +1617,11 @@
  *
  * Requires: MBEDTLS_ECP_C, MBEDTLS_MD_C
  */
-//#define MBEDTLS_ECJPAKE_C
+#ifdef CONFIG_MBEDTLS_ECJPAKE_C
+#define MBEDTLS_ECJPAKE_C
+#else
+#undef MBEDTLS_ECJPAKE_C
+#endif
 
 /**
  * \def MBEDTLS_ECP_C
@@ -2213,6 +2246,25 @@
  * This module is required for X.509 certificate creation.
  */
 #define MBEDTLS_X509_CRT_WRITE_C
+
+/**
+ * \def MBEDTLS_X509_ALLOW_UNSUPPORTED_CRITICAL_EXTENSION
+ *
+  * Alow the X509 parser to not break-off when parsing an X509 certificate
+ * and encountering an unknown critical extension.
+ *
+ * Module:  library/x509_crt.c
+ *
+ * Requires: MBEDTLS_X509_CRT_PARSE_C
+ *
+ * This module is supports loading of certificates with extensions that
+ * may not be supported by mbedtls.
+ */
+#ifdef CONFIG_MBEDTLS_ALLOW_UNSUPPORTED_CRITICAL_EXT
+#define MBEDTLS_X509_ALLOW_UNSUPPORTED_CRITICAL_EXTENSION
+#else
+#undef MBEDTLS_X509_ALLOW_UNSUPPORTED_CRITICAL_EXTENSION
+#endif
 
 /**
  * \def MBEDTLS_X509_CSR_WRITE_C

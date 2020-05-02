@@ -5,6 +5,8 @@
 
 PROJECT_NAME := unit-test-app
 
+EXTRA_COMPONENT_DIRS += ${IDF_PATH}/examples/peripherals/rmt/ir_protocols/components
+
 ifeq ($(MAKELEVEL),0)
 # Set default target
 all:
@@ -63,6 +65,8 @@ $(BINARIES_DIR)/%/$(PROJECT_NAME).bin: configs/%
 	rm -f $(BUILDS_DIR)/$*/sdkconfig
 	cat sdkconfig.defaults > $(BUILDS_DIR)/$*/sdkconfig.defaults
 	echo "" >> $(BUILDS_DIR)/$*/sdkconfig.defaults # in case there is no trailing newline in sdkconfig.defaults
+	cat sdkconfig.defaults.esp32 >> $(BUILDS_DIR)/$*/sdkconfig.defaults
+	echo "" >> $(BUILDS_DIR)/$*/sdkconfig.defaults
 	cat configs/$* >> $(BUILDS_DIR)/$*/sdkconfig.defaults
 
 	# Build, tweaking paths to sdkconfig and sdkconfig.defaults

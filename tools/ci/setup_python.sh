@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 # Regexp for matching job names which are incompatible with Python 3
 # - assign_test, nvs_compatible_test, IT - auto_test_script causes the incompatibility
@@ -51,3 +51,6 @@ else
     echo 'No /opt/pyenv/activate exists and no Python interpreter is found!'
     exit 1
 fi
+
+# add esp-idf local package path to PYTHONPATH so it can be imported directly
+export PYTHONPATH="$IDF_PATH/tools:$IDF_PATH/tools/ci/python_packages:$PYTHONPATH"

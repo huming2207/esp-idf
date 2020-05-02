@@ -457,7 +457,7 @@ tBTM_STATUS BTM_SetLocalDeviceName (char *p_name)
     /* Save the device name if local storage is enabled */
     p = (UINT8 *)btm_cb.cfg.bd_name;
     if (p != (UINT8 *)p_name) {
-        BCM_STRNCPY_S(btm_cb.cfg.bd_name, sizeof(btm_cb.cfg.bd_name), p_name, BTM_MAX_LOC_BD_NAME_LEN);
+        BCM_STRNCPY_S(btm_cb.cfg.bd_name, p_name, BTM_MAX_LOC_BD_NAME_LEN);
         btm_cb.cfg.bd_name[BTM_MAX_LOC_BD_NAME_LEN] = '\0';
     }
 #else
@@ -1111,7 +1111,7 @@ tBTM_STATUS BTM_BleSetChannels (BLE_CHANNELS channels, tBTM_CMPL_CB *p_ble_chann
 
 /*******************************************************************************
 **
-** Function         btm_set_afh_channels_complete
+** Function         btm_ble_set_channels_complete
 **
 ** Description      This function is called when setting AFH channels complete.
 **                  message is received from the HCI.

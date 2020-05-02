@@ -24,8 +24,8 @@ extern "C" {
 #include "sdkconfig.h"
 #if CONFIG_IDF_TARGET_ESP32
 #include "esp32/esp_efuse.h"
-#elif CONFIG_IDF_TARGET_ESP32S2BETA
-#include "esp32s2beta/esp_efuse.h"
+#elif CONFIG_IDF_TARGET_ESP32S2
+#include "esp32s2/esp_efuse.h"
 #endif
 
 #define ESP_ERR_EFUSE                              0x1600                     /*!< Base error code for efuse api. */
@@ -35,13 +35,18 @@ extern "C" {
 #define ESP_ERR_CODING                            (ESP_ERR_EFUSE + 0x04)      /*!< Error while a encoding operation. */
 
 /**
-* @brief Structure eFuse field
+ * @brief Structure eFuse field
  */
-typedef struct {
+struct esp_efuse_desc_s {
     esp_efuse_block_t   efuse_block: 8; /**< Block of eFuse */
     uint8_t             bit_start;      /**< Start bit [0..255] */
     uint16_t            bit_count;      /**< Length of bit field [1..-]*/
-} esp_efuse_desc_t;
+};
+
+/**
+ * @brief Type definition for an eFuse field
+ */
+typedef struct esp_efuse_desc_s esp_efuse_desc_t;
 
 /**
  * @brief   Reads bits from EFUSE field and writes it into an array.
@@ -326,6 +331,59 @@ esp_err_t esp_efuse_update_secure_version(uint32_t secure_version);
  * @param[in] size The size of the partition.
  */
 void esp_efuse_init(uint32_t offset, uint32_t size);
+
+/* @brief Set the batch mode of writing fields.
+ *
+ * This mode allows you to write the fields in the batch mode.
+ * If this mode is enabled, esp_efuse_batch_write_commit() must be called
+ * to actually burn any written efuses.
+ * In this mode, reading efuse is not possible.
+ * This mode should be used when burning several efuses at one time.
+ *
+ * \code{c}
+ * // Example of using the batch writing mode.
+ *
+ * // set the batch writing mode
+ * esp_efuse_batch_write_begin();
+ *
+ * // use any writing functions as usual
+ * esp_efuse_write_field_blob(ESP_EFUSE_...);
+ * esp_efuse_write_field_cnt(ESP_EFUSE_...);
+ * esp_efuse_set_write_protect(EFUSE_BLKx);
+ * esp_efuse_write_reg(EFUSE_BLKx, ...);
+ * esp_efuse_write_block(EFUSE_BLKx, ...);
+ * ...
+ *
+ * // Write all of these fields to the efuse registers
+ * esp_efuse_batch_write_commit();
+ *
+ * \endcode
+ *
+ * @return
+ *          - ESP_OK: Successful.
+ */
+esp_err_t esp_efuse_batch_write_begin(void);
+
+/* @brief Reset the batch mode of writing fields.
+ *
+ * It will reset the batch writing mode and any written changes.
+ *
+ * @return
+ *          - ESP_OK: Successful.
+ *          - ESP_ERR_INVALID_STATE: Tha batch mode was not set.
+ */
+esp_err_t esp_efuse_batch_write_cancel(void);
+
+/* @brief Writes all prepared data for the batch mode.
+ *
+ * Must be called to ensure changes are written to the efuse registers.
+ * After this the batch writing mode will be reset.
+ *
+ * @return
+ *          - ESP_OK: Successful.
+ *          - ESP_ERR_INVALID_STATE: The deferred writing mode was not set.
+ */
+esp_err_t esp_efuse_batch_write_commit(void);
 
 #ifdef __cplusplus
 }
